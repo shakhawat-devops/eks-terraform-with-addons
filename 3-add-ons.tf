@@ -12,12 +12,6 @@ provider "helm" {
   }
 }
 
-resource "null_resource" "kubectl" {
-  provisioner "local-exec" {
-    command = "aws eks --region ${var.region} update-kubeconfig --name ${var.cluster_name}"
-  }
-}
-
 resource "kubernetes_service_account" "service-account" {
   metadata {
     name      = "aws-load-balancer-controller"

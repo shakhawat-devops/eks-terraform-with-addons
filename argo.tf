@@ -1,3 +1,9 @@
+resource "null_resource" "kubectl" {
+  provisioner "local-exec" {
+    command = "aws eks --region ${var.region} update-kubeconfig --name ${var.cluster_name}"
+  }
+}
+
 resource "kubernetes_namespace" "argocd" {
   metadata {
     name = "argocd" # Naming the namespace "argocd"
