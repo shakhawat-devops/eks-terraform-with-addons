@@ -1,11 +1,15 @@
+variable "region" {
+  default = "us-east-1"
+}
+
 variable "cluster_name" {
-    default = "testing-eks-cluster"
+  default = "testing-eks-cluster"
 }
 
 variable "cluster_version" {
-    default = "1.28"
+  default = "1.28"
 }
 
 variable "vpc" {
-    default = "terraform-eks-vpc"
+  default = "terraform-eks-vpc"
 }

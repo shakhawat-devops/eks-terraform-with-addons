@@ -6,21 +6,28 @@ provider "helm" {
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
+      # This requires the awscli to be installed locally where Terraform is executed
+      args = ["eks", "get-token", "--cluster-name", module.eks_blueprints.eks_cluster_id]
     }
+  }
+}
+
+resource "null_resource" "kubectl" {
+  provisioner "local-exec" {
+    command = "aws eks --region ${var.region} update-kubeconfig --name ${var.cluster_name}"
   }
 }
 
 resource "kubernetes_service_account" "service-account" {
   metadata {
-    name = "aws-load-balancer-controller"
+    name      = "aws-load-balancer-controller"
     namespace = "kube-system"
     labels = {
-        "app.kubernetes.io/name"= "aws-load-balancer-controller"
-        "app.kubernetes.io/component"= "controller"
+      "app.kubernetes.io/name"      = "aws-load-balancer-controller"
+      "app.kubernetes.io/component" = "controller"
     }
     annotations = {
-      "eks.amazonaws.com/role-arn" = module.lb_role.iam_role_arn
+      "eks.amazonaws.com/role-arn"               = module.lb_role.iam_role_arn
       "eks.amazonaws.com/sts-regional-endpoints" = "true"
     }
   }
@@ -55,7 +62,7 @@ resource "helm_release" "alb_ingress" {
   set {
     name  = "clusterName"
     value = module.eks_blueprints.eks_cluster_id
-}
+  }
 }
 
 
@@ -67,45 +74,45 @@ resource "helm_release" "metric_server" {
 
 }
 
-resource "helm_release" "cert_manager" {
-  name       = "cert-manager"
-  repository = "https://charts.jetstack.io"
-  chart      = "cert-manager"
-  namespace  = "kube-system"
+#resource "helm_release" "cert_manager" {
+#  name       = "cert-manager"
+#  repository = "https://charts.jetstack.io"
+#  chart      = "cert-manager"
+#  namespace  = "kube-system"
+#
+#  set {
+#    name  = "installCRDs"
+#    value = "true"
+#  }
+#}
 
-  set {
-    name  = "installCRDs"
-    value = "true"
-  }
-}
+#resource "kubernetes_service_account" "ca-service-account" {
+#  metadata {
+#    name = "cluster-autoscaler"
+#    namespace = "kube-system"
+#
+#    annotations = {
+#      "eks.amazonaws.com/role-arn" = aws_iam_policy.ca_policy.arn
+#    }
+#  }
+#}
 
-resource "kubernetes_service_account" "ca-service-account" {
-  metadata {
-    name = "cluster-autoscaler"
-    namespace = "kube-system"
-
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_policy.ca_policy.arn
-    }
-  }
-}
-
-resource "helm_release" "cluster_autoscaler" {
-  name       = "cluster-autoscaler"
-  repository = "https://kubernetes.github.io/autoscaler"
-  chart      = "cluster-autoscaler"
-  namespace  = "kube-system"
-  depends_on = [
-    kubernetes_service_account.ca-service-account
-  ]
-
-
-  set {
-    name  = "autoDiscovery.clusterName"
-    value = module.eks_blueprints.eks_cluster_id
-  }
-  set {
-    name  = "serviceAccount.name"
-    value = "cluster-autoscaler"
-  }
-}
+#resource "helm_release" "cluster_autoscaler" {
+#  name       = "cluster-autoscaler"
+#  repository = "https://kubernetes.github.io/autoscaler"
+#  chart      = "cluster-autoscaler"
+#  namespace  = "kube-system"
+#  depends_on = [
+#    kubernetes_service_account.ca-service-account
+#  ]
+#
+#
+#  set {
+#    name  = "autoDiscovery.clusterName"
+#    value = module.eks_blueprints.eks_cluster_id
+#  }
+#  set {
+#    name  = "serviceAccount.name"
+#    value = "cluster-autoscaler"
+#  }
+#}
