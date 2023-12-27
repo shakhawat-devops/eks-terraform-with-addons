@@ -3,7 +3,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
 
-  name = "terraform-vpc"
+  name = "${var.vpc}"
   cidr = "10.0.0.0/16"
 
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -19,11 +19,11 @@ module "vpc" {
 
   public_subnet_tags = {
     "kubernetes.io/role/elb"     = 1
-    "kubernetes.io/cluster/demo" = "owned"
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
-    "kubernetes.io/cluster/demo"      = "owned"
+    "kubernetes.io/cluster/${var.cluster_name}"      = "owned"
   }
 }

@@ -1,8 +1,8 @@
 module "eks_blueprints" {
   source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.25.0"
 
-  cluster_name    = "terraform-eks-cluster"
-  cluster_version = "1.28"
+  cluster_name    = "${var.cluster_name}"
+  cluster_version = "${var.cluster_version}"
   enable_irsa     = true
 
   vpc_id = module.vpc.vpc_id

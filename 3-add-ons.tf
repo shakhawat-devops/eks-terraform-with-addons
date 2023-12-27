@@ -79,3 +79,33 @@ resource "helm_release" "cert_manager" {
   }
 }
 
+resource "kubernetes_service_account" "ca-service-account" {
+  metadata {
+    name = "cluster-autoscaler"
+    namespace = "kube-system"
+
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_policy.ca_policy.arn
+    }
+  }
+}
+
+resource "helm_release" "cluster_autoscaler" {
+  name       = "cluster-autoscaler"
+  repository = "https://kubernetes.github.io/autoscaler"
+  chart      = "cluster-autoscaler"
+  namespace  = "kube-system"
+  depends_on = [
+    kubernetes_service_account.ca-service-account
+  ]
+
+
+  set {
+    name  = "autoDiscovery.clusterName"
+    value = module.eks_blueprints.eks_cluster_id
+  }
+  set {
+    name  = "serviceAccount.name"
+    value = "cluster-autoscaler"
+  }
+}
