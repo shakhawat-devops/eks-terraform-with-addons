@@ -18,6 +18,7 @@ module "eks_blueprints" {
       max_size        = "1"
       min_size        = "1"
     }
+
   }
 }
 

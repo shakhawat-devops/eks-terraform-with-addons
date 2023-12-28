@@ -4,12 +4,12 @@ module "vpc" {
   version = "5.0.0"
 
   name = var.vpc
-  cidr = "10.0.0.0/16"
+  cidr = var.cidr
 
   azs = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  private_subnets      = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets       = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  private_subnets      = var.private_subnets
+  public_subnets       = var.public_subnets
   enable_dns_hostnames = true
   enable_dns_support   = true
 
