@@ -12,11 +12,11 @@ module "eks_blueprints" {
   managed_node_groups = {
     role = {
       capacity_type   = "ON_DEMAND"
-      node_group_name = "nodegroup"
-      instance_types  = ["m6i.xlarge"]
-      desired_size    = "1"
-      max_size        = "1"
-      min_size        = "1"
+      node_group_name = var.node_group_name
+      instance_types  = var.instance_types
+      desired_size    = var.desired_instance_size
+      max_size        = var.max_instance_size
+      min_size        = var.min_instance_size
     }
 
   }

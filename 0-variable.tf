@@ -27,3 +27,22 @@ variable "public_subnets" {
   type    = list(any)
   default = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 }
+
+variable "node_group_name" {
+  default = "eks-nodegroup"
+}
+variable "instance_types" {
+  default = ["m6i.xlarge"]
+}
+
+variable "desired_instance_size" {
+  default = "1"  
+}
+
+variable "max_instance_size" {
+  default = "1"
+}
+
+variable "min_instance_size" {
+  default = "1"
+}
